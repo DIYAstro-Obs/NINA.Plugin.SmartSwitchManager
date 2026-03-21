@@ -39,10 +39,16 @@ The Smart Switch Manager allows you to control power relays and IoT switches as 
 
 ## Installation
 
-### Automatic (N.I.N.A. 3.x)
+## Installation
+
+### Automatic (via Beta Repository)
+As the plugin is currently in beta and not yet in the official N.I.N.A. store, you can add this repository to install and receive updates:
 1.  Open N.I.N.A.
-2.  Go to **Plugins → Available**.
-3.  Search for **Smart Switch Manager** and click **Install**.
+2.  Go to **Options → General → Plugin Repository**.
+3.  Click the **+** button under **Extra Repositories**.
+4.  Paste this URL: `https://raw.githubusercontent.com/DIYAstro/NINA.Plugin.SmartSwitchManager/main/manifests.json?`
+5.  Go to **Plugins → Available** and search for **Smart Switch Manager**.
+
 
 ### Manual
 1.  Download the latest release DLL (`NINA.Plugin.SmartSwitchManager.dll`).
