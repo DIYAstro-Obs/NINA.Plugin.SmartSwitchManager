@@ -73,6 +73,8 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
                 url += $"{separator}user={Uri.EscapeDataString(username)}&password={Uri.EscapeDataString(password)}";
             }
             var request = new HttpRequestMessage(HttpMethod.Get, url);
+            // Disable Keep-Alive. ESP8266 drops stale TCP connections, causing .NET to stumble on reuse.
+            request.Headers.ConnectionClose = true;
             return request;
         }
 
