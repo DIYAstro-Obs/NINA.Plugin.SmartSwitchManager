@@ -20,6 +20,23 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Patch AssemblyInfo
+      shell: pwsh
+      run: |
+        $VersionString = "${{ github.ref_name }}".TrimStart('v')
+        $Parts = $VersionString.Split('.')
+        $Major = if ($Parts.Length -gt 0) { $Parts[0] } else { "0" }
+        $Minor = if ($Parts.Length -gt 1) { $Parts[1] } else { "0" }
+        $Patch = if ($Parts.Length -gt 2) { $Parts[2] } else { "0" }
+        $BuildNum = if ($Parts.Length -gt 3) { $Parts[3] } else { "0" }
+        $FullVersion = "$Major.$Minor.$Patch.$BuildNum"
+        
+        $FilePath = "NINA.Plugin.SmartSwitchManager\Properties\AssemblyInfo.cs"
+        $Content = Get-Content $FilePath -Raw
+        $Content = $Content -replace '\[assembly: AssemblyVersion\(".*"\)\]', "[assembly: AssemblyVersion(`"$FullVersion`")]"
+        $Content = $Content -replace '\[assembly: AssemblyFileVersion\(".*"\)\]', "[assembly: AssemblyFileVersion(`"$FullVersion`")]"
+        Set-Content -Path $FilePath -Value $Content
+
     - name: Build Plugin
       shell: pwsh
       run: |
