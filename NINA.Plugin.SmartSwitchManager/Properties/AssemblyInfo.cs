@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("Tags", "Switch,Shelly,SmartHome,Relay,IoT")]
 
 // Changelog
-[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/DIYAstro/NINA.Plugin.SmartSwitchManager/blob/main/CHANGELOG.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/DIYAstro/NINA.Plugin.SmartSwitchManager/commits/main/")]
 
 // Optional metadata
 [assembly: AssemblyMetadata("FeaturedImageURL", "pack://application:,,,/NINA.Plugin.SmartSwitchManager;component/plugin_logo.png")]
