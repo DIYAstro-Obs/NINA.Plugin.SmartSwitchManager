@@ -141,18 +141,18 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
                     return;
                 }
 
-                // For normal toggles, we use separate requests instead of Backlog.
-                // This is extremely robust and avoids Tasmota Backlog timeouts/parsing issues.
+                // Use Backlog instead of separate requests to avoid Tasmota's Webserver dropping connections
                 try {
                     string stateVal = targetState ? "1" : "0";
-                    // 1. Reset PulseTime to ensure it doesn't stick from previous timer calls
-                    await ExecuteCommandAsync($"{GetPulseCmd()} 0");
-                    // 2. Disable the timer rule (just in case a previous timer got stuck)
-                    await ExecuteCommandAsync($"{ruleCommand} 0");
-                    // 3. Set the actual state
-                    await ExecuteCommandAsync($"{powerCmd} {stateVal}");
                     
-                    Logger.Info($"TasmotaBackend: Set state to {(targetState ? "ON" : "OFF")} ({baseUrl}, Ch: {channel}) using {ruleCommand} reset");
+                    // Bundle the commands: 
+                    // 1. Reset PulseTime
+                    // 2. Disable the timer rule
+                    // 3. Set the actual state
+                    string backlogCmd = $"Backlog {GetPulseCmd()} 0; {ruleCommand} 0; {powerCmd} {stateVal}";
+                    await ExecuteCommandAsync(backlogCmd);
+                    
+                    Logger.Info($"TasmotaBackend: Set state to {(targetState ? "ON" : "OFF")} ({baseUrl}, Ch: {channel}) using Backlog reset");
                 } catch (Exception ex) {
                     Logger.Error($"TasmotaBackend: Failed to set state: {ex.Message}");
                     throw;
