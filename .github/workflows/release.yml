@@ -59,7 +59,7 @@ jobs:
         $JsonData[0].Installer.URL = "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/NINA.Plugin.SmartSwitchManager.zip"
         
         # Save back the JSON temporarily for the upload step
-        $JsonData | ConvertTo-Json -Depth 10 | Set-Content -Path $JsonPath
+        ConvertTo-Json -InputObject $JsonData -Depth 10 | Set-Content -Path $JsonPath
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
