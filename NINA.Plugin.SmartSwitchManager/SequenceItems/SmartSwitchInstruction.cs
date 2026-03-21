@@ -19,7 +19,7 @@ namespace NINA.Plugin.SmartSwitchManager.SequenceItems {
 
     [ExportMetadata("Name", "Toggle Smart Switch")]
     [ExportMetadata("Description", "Turns a configured Smart Switch On or Off. The switch does not need to be actively connected in the Equipment tab.")]
-    [ExportMetadata("Icon", "SvgPower")] 
+    [ExportMetadata("Icon", "NINA.Plugin.SmartSwitchManager_PowerSVG")] 
     [ExportMetadata("Category", "Smart Switch Manager")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]
