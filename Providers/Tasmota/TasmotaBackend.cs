@@ -14,14 +14,13 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
     /// Backend for Tasmota devices using the HTTP API.
     /// Commands: cm?cmnd=Power<CH>%20On, cm?cmnd=Power<CH>%20Off, cm?cmnd=Power<CH>
     /// </summary>
-    [ExportBackend("Tasmota", "Tasmota", SupportsScanning = true, SupportsHardwareTimer = true)]
+    [ExportBackend("Tasmota", "Tasmota", SupportsScanning = true, SupportsHardwareTimer = false)]
     public class TasmotaBackend : ISmartSwitchBackend {
         private string baseUrl;
         private int channel;
         private string powerCmd;
         private string username;
         private string password;
-        private string ruleCommand;
         private bool isInitialized;
         private readonly System.Threading.SemaphoreSlim _httpLock = new System.Threading.SemaphoreSlim(1, 1);
 
@@ -51,13 +50,6 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
             this.powerCmd = $"Power{this.channel}";
             this.username = config.GetSetting("Username");
             this.password = config.GetSetting("Password");
-            
-            string ruleIdStr = config.GetSetting("RuleId", "3");
-            if (ruleIdStr != "1" && ruleIdStr != "2") {
-                ruleIdStr = "3";
-            }
-            this.ruleCommand = $"Rule{ruleIdStr}";
-            
             isInitialized = true;
         }
 
@@ -133,66 +125,30 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
             }
         }
 
-        public bool SupportsHardwareTimer => true;
+        public bool SupportsHardwareTimer => false;
 
         public async Task SetStateAsync(bool targetState, int delaySeconds = 0) {
             CheckInitialized();
 
             // Safety Check: Avoid power-cycling if target state is already reached
-            // Only if NO delay is requested. If a delay is requested, it means we want the pulse behavior.
-            if (delaySeconds <= 0) {
-                bool currentState = await GetStateAsync();
-                if (currentState == targetState) {
-                    Logger.Info($"TasmotaBackend: Switch ({baseUrl}, Ch: {channel}) is already {(targetState ? "ON" : "OFF")}. Skipping command.");
-                    return;
-                }
-
-                // Use Backlog instead of separate requests to avoid Tasmota's Webserver dropping connections
-                try {
-                    string stateVal = targetState ? "1" : "0";
-                    
-                    // Bundle the commands: 
-                    // 1. Reset PulseTime
-                    // 2. Disable the timer rule
-                    // 3. Set the actual state
-                    string backlogCmd = $"Backlog {GetPulseCmd()} 0; {ruleCommand} 0; {powerCmd} {stateVal}";
-                    await ExecuteCommandAsync(backlogCmd);
-                    
-                    Logger.Info($"TasmotaBackend: Set state to {(targetState ? "ON" : "OFF")} ({baseUrl}, Ch: {channel}) using Backlog reset");
-                } catch (Exception ex) {
-                    Logger.Error($"TasmotaBackend: Failed to set state: {ex.Message}");
-                    throw;
-                }
+            bool currentState = await GetStateAsync();
+            if (currentState == targetState) {
+                Logger.Info($"TasmotaBackend: Switch ({baseUrl}, Ch: {channel}) is already {(targetState ? "ON" : "OFF")}. Skipping command.");
                 return;
             }
 
-            // Hardware Timer Logic
             try {
-                int pulseTimeValue;
-                if (delaySeconds <= 11) {
-                    pulseTimeValue = delaySeconds * 10;
-                } else {
-                    pulseTimeValue = Math.Min(delaySeconds + 100, 64900);
-                }
-
-                string immediateState = !targetState ? "1" : "0";
-                string targetStateVal = targetState ? "1" : "0";
+                string stateVal = targetState ? "1" : "0";
                 
-                // One-shot timer logic: Rule triggers when target state is reached, resets PulseTime and disables itself.
-                // We use explicit indices (e.g. Power1#State) for rule triggers to ensure they work reliably.
-                string ruleDef = $"{ruleCommand} ON {powerCmd}#State={targetStateVal} DO {GetPulseCmd()} 0 ON {powerCmd}#State={targetStateVal} DO {ruleCommand} 0";
-                // Only the timer setup uses Backlog to be as fast as possible for the pulse start.
-                string timerCmd = $"Backlog {ruleDef};{ruleCommand} 1;{GetPulseCmd()} {pulseTimeValue};{powerCmd} {immediateState}";
-
-                await ExecuteCommandAsync(timerCmd);
-                Logger.Info($"TasmotaBackend: Set one-shot pulse timer for {delaySeconds}s to reach {(targetState ? "ON" : "OFF")} ({baseUrl}, Ch: {channel}) using {ruleCommand}");
+                // Pure, clean, standard toggle. No timer rules, no PulseTime manipulation.
+                await ExecuteCommandAsync($"{powerCmd} {stateVal}");
+                
+                Logger.Info($"TasmotaBackend: Set state to {(targetState ? "ON" : "OFF")} ({baseUrl}, Ch: {channel})");
             } catch (Exception ex) {
-                Logger.Error($"TasmotaBackend: Failed to set state with timer: {ex.Message}");
+                Logger.Error($"TasmotaBackend: Failed to set state: {ex.Message}");
                 throw;
             }
         }
-
-        private string GetPulseCmd() => $"PulseTime{this.channel}";
 
         private async Task ExecuteCommandAsync(string command) {
             await _httpLock.WaitAsync();
@@ -202,6 +158,25 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
                     using var request = CreateRequest($"{baseUrl}/cm?cmnd={Uri.EscapeDataString(command)}");
                     var response = await HttpClient.SendAsync(request, cts.Token);
                     response.EnsureSuccessStatusCode();
+
+                    // Tasmota often returns HTTP 200 OK even when it fails to parse the command (e.g. under load).
+                    // We must read the JSON body to see if it actually accepted the command.
+                    var content = await response.Content.ReadAsStringAsync();
+                    try {
+                        var json = Newtonsoft.Json.Linq.JObject.Parse(content);
+                        if (json.TryGetValue("Command", out var cmdTarget) && string.Equals(cmdTarget.ToString(), "Unknown", StringComparison.OrdinalIgnoreCase)) {
+                            throw new Exception($"Tasmota rejected command as Unknown: {content}");
+                        }
+                        if (json.TryGetValue("Error", out var errStr)) {
+                            throw new Exception($"Tasmota returned an Error: {content}");
+                        }
+                    } catch (Newtonsoft.Json.JsonReaderException) {
+                         // Some very old or weird Tasmota responses might not be perfect JSON.
+                         if (content.Contains("\"Command\":\"Unknown\"") || content.Contains("Error")) {
+                             throw new Exception($"Tasmota returned invalid/error response: {content}");
+                         }
+                    }
+
                     return true;
                 });
 
@@ -220,7 +195,6 @@ namespace NINA.Plugin.SmartSwitchManager.Backends {
                 yield return new ConfigFieldDescriptor("Channel", "Relay Index", ConfigFieldType.Number, true, "1");
                 yield return new ConfigFieldDescriptor("Username", "User", ConfigFieldType.Text, false);
                 yield return new ConfigFieldDescriptor("Password", "Pass", ConfigFieldType.Password, false);
-                yield return new ConfigFieldDescriptor("RuleId", "Timer Rule ID (1-3)", ConfigFieldType.Number, false, "3") { IsExpertOnly = true };
             }
         }
         public void Dispose() {

@@ -14,15 +14,14 @@ The Smart Switch Manager allows you to control power relays and IoT switches as 
 | :--- | :--- | :--- | :--- | :--- |
 | **Shelly** | Gen 2 / 3 (Plus, Pro) | RPC | Lab & Field Tested | Yes |
 | **Shelly** | Gen 1 | HTTP | Lab Tested | Yes |
-| **Tasmota** | All (ESP8266/ESP32) | HTTP | Lab Tested | Yes (Rule-based) |
+| **Tasmota** | All (ESP8266/ESP32) | HTTP | Lab Tested | No |
 | **Home Assistant** | Entities / Switches | REST | Lab Tested | No |
 | **ESPHome** | `web_server` components | REST | Lab Tested | No |
 
 #### Provider Notes
 
 *   **Shelly**: Supports Basic/Digest auth. Hardware timers are ideal for PC shutdown or cooling workflows.
-*   **Tasmota**: Uses a verified "One-Shot" rule-based timer. 
-    - **Expert Setting**: `RuleId` (1, 2, or 3). Defaults to `3`.
+*   **Tasmota**: Reliable sequential request enforcement. See the [Tasmota Documentation](Providers/Tasmota/README.md) for important hardware/template tips.
 *   **Home Assistant**: Requires a Long-Lived Access Token (LLAT).
 
 ### Sequencer Behavior
