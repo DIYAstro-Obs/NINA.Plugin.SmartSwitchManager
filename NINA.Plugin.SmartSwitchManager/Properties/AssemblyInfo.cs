@@ -26,16 +26,16 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyMetadata("License", "MPL-2.0")]
 [assembly: AssemblyMetadata("LicenseURL", "https://www.mozilla.org/en-US/MPL/2.0/")]
 // Repository
-[assembly: AssemblyMetadata("Repository", "https://github.com/DIYAstro/NINA.Plugin.SmartSwitchManager")]
+[assembly: AssemblyMetadata("Repository", "https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager")]
 
 // Homepage
-[assembly: AssemblyMetadata("Homepage", "https://github.com/DIYAstro/NINA.Plugin.SmartSwitchManager")]
+[assembly: AssemblyMetadata("Homepage", "https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager")]
 
 // Tags for plugin search
 [assembly: AssemblyMetadata("Tags", "Switch,Shelly,SmartHome,Relay,IoT")]
 
 // Changelog
-[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/DIYAstro/NINA.Plugin.SmartSwitchManager/commits/main/")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/commits/main/")]
 
 // Optional metadata
 [assembly: AssemblyMetadata("FeaturedImageURL", "pack://application:,,,/NINA.Plugin.SmartSwitchManager;component/plugin_logo.png")]
