@@ -79,8 +79,9 @@
         <converters:ConfigFieldTemplateSelector.BooleanTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="{Binding Descriptor.Label, StringFormat='{}{0}:'}" 
+                             Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
                     <CheckBox IsChecked="{Binding Value, Converter={StaticResource StringToBoolConverter}}" 
-                              Content="{Binding Descriptor.Label}" 
                               Foreground="{DynamicResource SecondaryBrush}" 
                               VerticalAlignment="Center" 
                               FontSize="10" />

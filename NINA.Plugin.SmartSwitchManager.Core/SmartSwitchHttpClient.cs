@@ -17,10 +17,16 @@ namespace NINA.Plugin.SmartSwitchManager.Core {
         public static int TimeoutSeconds { get; set; } = 10;
 
         static SmartSwitchHttpClient() {
+            // Smart home devices often use self-signed certificates on local IPs, which fail standard validation.
+            // We disable SSL certificate validation globally for this plugin.
+            var handler = new HttpClientHandler {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+            };
+
             // We use an infinite timeout on the client instance itself because 
             // mutating it after the first request would throw an InvalidOperationException.
             // Instead, we use per-request CancellationTokens for the actual timeout.
-            Instance = new HttpClient() {
+            Instance = new HttpClient(handler) {
                 Timeout = System.Threading.Timeout.InfiniteTimeSpan
             };
         }
