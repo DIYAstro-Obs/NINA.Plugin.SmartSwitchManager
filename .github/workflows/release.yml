@@ -23,8 +23,12 @@ jobs:
     - name: Patch AssemblyInfo
       shell: pwsh
       run: |
-        $VersionString = "${{ github.ref_name }}".TrimStart('v')
-        $Parts = $VersionString.Split('.')
+        $Tag = "${{ github.ref_name }}"
+        $VersionString = $Tag -replace '^v', ""
+        # Extract only the numeric version for internal assembly/manifest files (e.g. 1.2.3.4-beta -> 1.2.3.4)
+        $NumericPart = ($VersionString -split '-')[0]
+        $Parts = $NumericPart.Split('.')
+        
         $Major = if ($Parts.Length -gt 0) { $Parts[0] } else { "0" }
         $Minor = if ($Parts.Length -gt 1) { $Parts[1] } else { "0" }
         $Patch = if ($Parts.Length -gt 2) { $Parts[2] } else { "0" }
@@ -46,9 +50,11 @@ jobs:
     - name: Patch Manifest
       shell: pwsh
       run: |
-        # Extract version without the 'v' (e.g., v1.0.0.0 -> 1.0.0.0)
-        $VersionString = "${{ github.ref_name }}".TrimStart('v')
-        $Parts = $VersionString.Split('.')
+        $Tag = "${{ github.ref_name }}"
+        $VersionString = $Tag -replace '^v', ""
+        # Use only the numeric part for the N.I.N.A. manifest
+        $NumericPart = ($VersionString -split '-')[0]
+        $Parts = $NumericPart.Split('.')
         
         $Major = if ($Parts.Length -gt 0) { $Parts[0] } else { "0" }
         $Minor = if ($Parts.Length -gt 1) { $Parts[1] } else { "0" }
@@ -87,5 +93,6 @@ jobs:
           build/NINA.Plugin.SmartSwitchManager.zip
           manifests.json
         generate_release_notes: true
+        prerelease: ${{ contains(github.ref_name, '-') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

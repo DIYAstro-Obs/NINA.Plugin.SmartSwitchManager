@@ -1,0 +1,53 @@
+name: Sync to Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'README.md'
+      - 'ADD_NEW_PROVIDER.md'
+      - 'Providers/**/README.md'
+      - '.github/workflows/wiki-sync.yml'
+  workflow_dispatch:
+
+jobs:
+  sync_wiki:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Prepare Wiki Files
+        run: |
+          mkdir temp_wiki
+          
+          # Use main README as Wiki Home
+          if [ -f README.md ]; then
+            cp README.md temp_wiki/Home.md
+          fi
+          
+          # Map Developer documentation
+          if [ -f ADD_NEW_PROVIDER.md ]; then
+            cp ADD_NEW_PROVIDER.md "temp_wiki/Dev - Add New Provider.md"
+          fi
+          
+          # Collect all Provider READMEs and rename them for a flat structure
+          if [ -d Providers ]; then
+            for provider_dir in Providers/*/; do
+              if [ -f "${provider_dir}README.md" ]; then
+                # Extract provider name from directory path
+                provider_name=$(basename "$provider_dir")
+                cp "${provider_dir}README.md" "temp_wiki/Provider - ${provider_name}.md"
+              fi
+            done
+          fi
+
+      - name: Deploy to Wiki
+        uses: Andrew-Chen-Wang/github-wiki-action@v4
+        with:
+          wiki_folder: temp_wiki
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
