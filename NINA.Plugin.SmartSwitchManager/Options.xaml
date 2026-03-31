@@ -19,7 +19,7 @@
             <DataTemplate DataType="{x:Type models:ConfigFieldViewModel}">
                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding Descriptor.Label, StringFormat='{}{0}:'}" 
-                             Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
+                             Opacity="0.8" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
                     <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="110" VerticalAlignment="Center">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -39,7 +39,7 @@
             <DataTemplate DataType="{x:Type models:ConfigFieldViewModel}">
                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding Descriptor.Label, StringFormat='{}{0}:'}" 
-                             Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
+                             Opacity="0.8" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
                     <!-- Using a TextBox for now, but configured as Password type in metadata -->
                     <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="80" VerticalAlignment="Center">
                         <TextBox.Style>
@@ -60,7 +60,7 @@
             <DataTemplate DataType="{x:Type models:ConfigFieldViewModel}">
                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding Descriptor.Label, StringFormat='{}{0}:'}" 
-                             Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
+                             Opacity="0.8" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
                     <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="40" VerticalAlignment="Center">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -80,9 +80,9 @@
             <DataTemplate>
                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="{Binding Descriptor.Label, StringFormat='{}{0}:'}" 
-                             Foreground="{DynamicResource SecondaryBrush}" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
+                             Opacity="0.8" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="10" />
                     <CheckBox IsChecked="{Binding Value, Converter={StaticResource StringToBoolConverter}}" 
-                              Foreground="{DynamicResource SecondaryBrush}" 
+                              Opacity="0.8" 
                               VerticalAlignment="Center" 
                               FontSize="10" />
                 </StackPanel>
