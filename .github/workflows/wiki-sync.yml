@@ -22,7 +22,12 @@ jobs:
           # Use main README as Wiki Home
           if [ -f README.md ]; then
             cp README.md temp_wiki/Home.md
+            # Fix relative image paths for the flat Wiki structure
+            sed -i 's|NINA.Plugin.SmartSwitchManager/||g' temp_wiki/Home.md
           fi
+          
+          # Copy images to the Wiki root
+          cp NINA.Plugin.SmartSwitchManager/*.png temp_wiki/ || true
           
           # Map Developer documentation
           if [ -f ADD_NEW_PROVIDER.md ]; then

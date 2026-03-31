@@ -145,8 +145,16 @@
                 <TextBlock Text="Smart Switch Manager"
                            FontSize="18" FontWeight="Bold" Margin="0,0,0,5"
                            Foreground="{DynamicResource PrimaryBrush}" />
-                <TextBlock Text="Smart Switch Manager lets you control smart home switches (Shelly, Tasmota, HA, ESPHome) directly from N.I.N.A."
-                           FontSize="12" Foreground="{DynamicResource SecondaryBrush}" Margin="0,0,0,15" TextWrapping="Wrap" />
+                <TextBlock FontSize="12" Foreground="{DynamicResource SecondaryBrush}" Margin="0,0,0,20" TextWrapping="Wrap">
+                    <Run Text="Smart Switch Manager lets you control smart home switches (Shelly, Tasmota, HA, ESPHome) directly from N.I.N.A." />
+                    <LineBreak />
+                    <LineBreak />
+                    <Hyperlink NavigateUri="https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/wiki" 
+                               RequestNavigate="Hyperlink_RequestNavigate"
+                               Foreground="{DynamicResource PrimaryBrush}">
+                        <Run Text="🌍 Open Plugin Documentation &amp; Wiki" FontWeight="Bold" />
+                    </Hyperlink>
+                </TextBlock>
 
                 <!-- Global Settings -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
