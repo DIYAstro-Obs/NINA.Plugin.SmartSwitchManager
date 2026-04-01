@@ -69,29 +69,28 @@ jobs:
         Write-Host "Calculated Hash: $Hash"
         
         # Load and update the JSON contents
-        $JsonPath = "manifests.json"
+        $JsonPath = "manifest.json"
         $JsonData = Get-Content -Raw -Path $JsonPath | ConvertFrom-Json
         
         # Update JSON object properties
-        $JsonData[0].Version.Major = $Major
-        $JsonData[0].Version.Minor = $Minor
-        $JsonData[0].Version.Patch = $Patch
-        $JsonData[0].Version.Build = $BuildNum
-        $JsonData[0].Installer.Checksum = $Hash
+        $JsonData.Version.Major = $Major
+        $JsonData.Version.Minor = $Minor
+        $JsonData.Version.Patch = $Patch
+        $JsonData.Version.Build = $BuildNum
+        $JsonData.Installer.Checksum = $Hash
         
         # The URL dynamically points to the specific tag release
-        $JsonData[0].Installer.URL = "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/NINA.Plugin.SmartSwitchManager.zip"
+        $JsonData.Installer.URL = "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/NINA.Plugin.SmartSwitchManager.zip"
         
         # Save back the JSON temporarily for the upload step
-        # Force wrapping in an array, because ConvertFrom-Json unwraps single-item arrays
-        ConvertTo-Json -InputObject @($JsonData) -Depth 10 | Set-Content -Path $JsonPath
+        ConvertTo-Json -InputObject $JsonData -Depth 10 | Set-Content -Path $JsonPath
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         files: |
           build/NINA.Plugin.SmartSwitchManager.zip
-          manifests.json
+          manifest.json
         generate_release_notes: true
         prerelease: ${{ contains(github.ref_name, '-') }}
       env:
