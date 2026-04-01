@@ -15,14 +15,15 @@ The Smart Switch Manager allows you to control power relays and IoT switches as 
 | **Shelly** | Gen 2 / 3 (Plus, Pro) | RPC | Lab & Field Tested | Yes |
 | **Shelly** | Gen 1 | HTTP | Lab Tested | Yes |
 | **Tasmota** | All (ESP8266/ESP32) | HTTP | Lab Tested | No |
-| **Home Assistant** | Entities / Switches | REST | Lab Tested | No |
-| **ESPHome** | `web_server` components | REST | Lab Tested | No |
+| **Home Assistant** | Entities / Scripts / Timers | REST | Lab & Field Tested | **Yes (via Scripts)** |
+| **ESPHome** | `web_server` components | REST | Lab Tested | No* |
 
 #### Provider Notes
 
 *   **Shelly**: Supports Basic/Digest auth. Hardware timers are ideal for PC shutdown or cooling workflows.
 *   **Tasmota**: Reliable sequential request enforcement. See the [Tasmota Documentation](Providers/Tasmota/README.md) for important hardware/template tips.
-*   **Home Assistant**: Requires a Long-Lived Access Token (LLAT).
+*   **Home Assistant**: Integration via the standard REST API (Entities) or a dedicated **Script/Timer** backend. The latter uses a blueprint to handle autonomous delays directly on the HA instance. Requires a Long-Lived Access Token (LLAT).
+*   **ESPHome**: Native hardware timers are currently not implemented in the plugin. However, autonomous behavior can be achieved by tailoring the device's internal YAML logic (e.g., `delayed_off`).
 
 ### Sequencer Behavior
 The **Toggle SmartSwitch** instruction in the Advanced Sequencer has a built-in safety check:
@@ -39,21 +40,17 @@ The **Toggle SmartSwitch** instruction in the Advanced Sequencer has a built-in 
 
 ## Installation
 
-### Automatic (via Beta Repository)
-As the plugin is currently in beta and not yet in the official N.I.N.A. store, you can add this repository to install and receive updates:
+### Automatic (via N.I.N.A. Plugin Manager)
+The Smart Switch Manager is available in the official N.I.N.A. plugin repository!
 1.  Open N.I.N.A.
-2.  Go to **Options → General → Plugin Repository**.
-3.  Click the **+** button under **Extra Repositories**.
-4.  Paste this URL: `https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/releases/latest/download/manifests.json?`
-5.  Go to **Plugins → Available** and search for **Smart Switch Manager**.
-
+2.  Go to **Plugins → Available** and search for **Smart Switch Manager**.
+3.  Click **Install** in the top right corner.
+4.  Restart N.I.N.A.
 
 ### Manual
-1.  Download the latest release DLL (`NINA.Plugin.SmartSwitchManager.dll`).
-2.  Navigate to your N.I.N.A. plugins directory: `%localappdata%\NINA\3\Plugins\`.
-3.  Create a folder named `SmartSwitchManager`.
-4.  Copy the DLL file into that folder.
-5.  Restart N.I.N.A.
+1.  Download the latest release ZIP from the GitHub [Releases](https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/releases) page.
+2.  Extract the contents into your N.I.N.A. plugins directory: `%localappdata%\NINA\3\Plugins\SmartSwitchManager`.
+3.  Restart N.I.N.A.
 
 ## Usage
 
