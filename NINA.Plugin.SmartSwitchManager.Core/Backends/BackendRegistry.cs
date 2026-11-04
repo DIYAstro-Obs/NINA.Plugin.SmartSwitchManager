@@ -60,22 +60,45 @@ namespace NINA.Plugin.SmartSwitchManager.Core.Backends {
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
             string assemblyName = new AssemblyName(args.Name).Name;
-            
+
+            // Always hand out the Core assembly this registry itself belongs to. N.I.N.A. loads every plugin
+            // into its own AssemblyLoadContext, so another copy of Core may be loaded elsewhere in the process.
+            // Binding the providers to such a copy would give them a different ISmartSwitchBackend type identity.
+            var ownAssembly = typeof(BackendRegistry).Assembly;
+            if (string.Equals(assemblyName, ownAssembly.GetName().Name, StringComparison.OrdinalIgnoreCase)) {
+                return ownAssembly;
+            }
+
             var loadedAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName, StringComparison.OrdinalIgnoreCase));
             if (loadedAssembly != null) return loadedAssembly;
 
             if (string.IsNullOrEmpty(pluginDirectory)) return null;
-            string assemblyPath = Path.Combine(pluginDirectory, assemblyName + ".dll");
-            
-            if (File.Exists(assemblyPath)) {
+
+            // Probe Backends\<Provider>\ before the plugin root. A stale copy left in the root by an older
+            // layout must never shadow the provider that is deployed in its own folder.
+            foreach (string assemblyPath in EnumerateProbePaths(assemblyName)) {
                 try {
                     return Assembly.LoadFrom(assemblyPath);
                 } catch (Exception ex) {
-                    Logger.Debug($"BackendRegistry: Failed to resolve assembly {assemblyName} from {pluginDirectory}: {ex.Message}");
+                    Logger.Debug($"BackendRegistry: Failed to resolve assembly {assemblyName} from {assemblyPath}: {ex.Message}");
                 }
             }
             return null;
+        }
+
+        private IEnumerable<string> EnumerateProbePaths(string assemblyName) {
+            string fileName = assemblyName + ".dll";
+            string backendsPath = Path.Combine(pluginDirectory, "Backends");
+            if (Directory.Exists(backendsPath)) {
+                foreach (string dir in Directory.EnumerateDirectories(backendsPath)) {
+                    string candidate = Path.Combine(dir, fileName);
+                    if (File.Exists(candidate)) yield return candidate;
+                }
+            }
+
+            string rootCandidate = Path.Combine(pluginDirectory, fileName);
+            if (File.Exists(rootCandidate)) yield return rootCandidate;
         }
 
         [ImportMany(typeof(ISmartSwitchBackend))]
