@@ -10,8 +10,9 @@ The plugin uses a dynamic configuration system powered by the Managed Extensibil
 
 1.  Create a new C# Class Library project (targeting `net8.0-windows7.0` to match N.I.N.A. 3.x).
 2.  Add a reference to `NINA.Plugin.SmartSwitchManager.Core.csproj`.
-3.  **Recommended:** Place the project in the `Providers/` folder. It will then automatically inherit shared build settings (like N.I.N.A. library versions) from the root `Directory.Build.props`.
-4.  Ensure the output DLL is placed in the `Backends/` folder of the main plugin directory.
+3.  Place the project in `Providers/<Name>/` and name the assembly `NINA.Plugin.SmartSwitchManager.<Name>`. It will then automatically inherit shared build settings (like N.I.N.A. library versions) from the root `Directory.Build.props`.
+4.  Nothing else is required for packaging: every project matching `Providers/*/*.csproj` is built with the plugin and packaged to `Backends/<Name>/` by `build/Plugin.targets`. Do not copy the DLL manually and do not add a project reference to the main plugin.
+5.  Add the project to `NINA.Plugin.SmartSwitchManager.sln` so it also appears in the IDE.
 
 ### 2. Implementing the Backend
 
@@ -96,8 +97,8 @@ var response = await httpClient.GetAsync(url, cts.Token);
 
 For a faster start, you can copy the fully commented template files from the repository:
 
-- **Backend Logic**: [TemplateBackend.cs](file:///c:/Users/Dirk/Documents/Programming/NINA.Plugin.SmartSwitchManager/Providers/Template/TemplateBackend.cs)
-- **Network Scanner**: [TemplateScanner.cs](file:///c:/Users/Dirk/Documents/Programming/NINA.Plugin.SmartSwitchManager/Providers/Template/TemplateScanner.cs)
+- **Backend Logic**: [TemplateBackend.cs](Providers/Template/TemplateBackend.cs)
+- **Network Scanner**: [TemplateScanner.cs](Providers/Template/TemplateScanner.cs)
 
 These files contain detailed explanations for every method and demonstrate how to use all available configuration field types.
 

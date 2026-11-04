@@ -40,16 +40,20 @@ The **Toggle SmartSwitch** instruction in the Advanced Sequencer has a built-in 
 
 ## Installation
 
-### Automatic (via N.I.N.A. Plugin Manager)
-The Smart Switch Manager is available in the official N.I.N.A. plugin repository!
+Requires N.I.N.A. 3.2.0.9001 or newer.
+
+### Automatic (via Extra Repository)
+The plugin is not part of the official N.I.N.A. plugin repository yet. Until it is, add this repository to install and update it from the Plugin Manager:
 1.  Open N.I.N.A.
-2.  Go to **Plugins → Available** and search for **Smart Switch Manager**.
-3.  Click **Install** in the top right corner.
-4.  Restart N.I.N.A.
+2.  Go to **Options → General → Plugin Repository**.
+3.  Click the **+** button under **Extra Repositories**.
+4.  Paste this URL, including the trailing `?`: `https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/releases/latest/download/manifests.json?`
+5.  Go to **Plugins → Available**, search for **Smart Switch Manager** and click **Install**.
+6.  Restart N.I.N.A.
 
 ### Manual
-1.  Download the latest release ZIP from the GitHub [Releases](https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/releases) page.
-2.  Extract the contents into your N.I.N.A. plugins directory: `%localappdata%\NINA\3\Plugins\SmartSwitchManager`.
+1.  Download the latest `NINA.Plugin.SmartSwitchManager.<version>.zip` from the GitHub [Releases](https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/releases) page.
+2.  Extract it into `%localappdata%\NINA\Plugins\3.0.0\Smart Switch Manager\` (`3.0.0` is the plugin folder used by N.I.N.A. 3.x). Keep the `Backends` folder inside.
 3.  Restart N.I.N.A.
 
 ## Usage
@@ -71,10 +75,17 @@ The Smart Switch Manager is available in the official N.I.N.A. plugin repository
 If you want to add support for a new smart switch ecosystem (like Tasmota or Home Assistant), please refer to the [ADD_NEW_PROVIDER.md](ADD_NEW_PROVIDER.md) guide.
 
 ### Building from Source
-Requires .NET 8.0 SDK.
+Requires the .NET 8.0 SDK and PowerShell 7 (`pwsh`).
 ```powershell
 dotnet build NINA.Plugin.SmartSwitchManager.sln -c Release
+
+# Install into the local N.I.N.A. plugin folder (close N.I.N.A. first)
+dotnet msbuild NINA.Plugin.SmartSwitchManager/NINA.Plugin.SmartSwitchManager.csproj -t:DeployPlugin -p:Configuration=Debug
+
+# Create the release archive and manifest in artifacts/release
+dotnet msbuild NINA.Plugin.SmartSwitchManager/NINA.Plugin.SmartSwitchManager.csproj -t:PackagePlugin -p:Configuration=Release
 ```
+Plugin metadata lives in `Plugin.props`. A release is created by pushing a tag of the form `vMAJOR.MINOR.PATCH.BUILD` (for example `v1.0.0.0`), see `.github/workflows/release.yml`.
 
 ## License
 Licensed under the MPL-2.0 License.
