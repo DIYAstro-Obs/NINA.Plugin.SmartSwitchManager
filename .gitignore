@@ -35,7 +35,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-/build/
 /NINA/External/
 /NINA/External/bin/
 /NINA/External/obj/
@@ -87,7 +86,12 @@ TestResult.xml
 *.cache
 *.docstates
 *.txt
+!LICENSE.txt
 *.zip
+
+# Release tooling output and per-developer settings (build/ itself holds tracked scripts)
+artifacts/
+local.props
 wpfbase.cs
 old_dock.txt
 build_errors.json

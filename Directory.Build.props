@@ -2,10 +2,13 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Platforms>x64</Platforms>
-    <Authors>Dirk</Authors>
-    <Company>NINA.Plugin.SmartSwitchManager</Company>
-    <Copyright>Copyright © 2024 Dirk</Copyright>
+    <!-- The solution maps "Any CPU" to x64. Make direct project builds (dotnet msbuild <proj> -t:PackagePlugin) match it. -->
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <Authors>Dirk Morlak</Authors>
+    <Company>Dirk Morlak</Company>
+    <Copyright>Copyright © 2026 Dirk Morlak</Copyright>
     <NINAVersion>3.2.0.9001</NINAVersion>
+    <Deterministic>true</Deterministic>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 </Project>

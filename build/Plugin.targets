@@ -1,0 +1,49 @@
+<Project>
+  <!-- Based on isbeorn/nina.plugin.template (see build/PROVENANCE.md for the adaptations made here). -->
+  <PropertyGroup>
+    <PluginRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</PluginRoot>
+    <PluginArtifactDirectory>$(PluginRoot)/artifacts</PluginArtifactDirectory>
+    <PluginStageDirectory>$(PluginArtifactDirectory)/stage/$(Configuration)</PluginStageDirectory>
+    <PluginChannel Condition="'$(PluginChannel)' == ''">Release</PluginChannel>
+  </PropertyGroup>
+  <Import Project="$(PluginRoot)/local.props" Condition="Exists('$(PluginRoot)/local.props')" />
+  <PropertyGroup Condition="'$(NinaExecutable)' != ''">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(NinaExecutable)</StartProgram>
+    <StartWorkingDirectory>$([System.IO.Path]::GetDirectoryName('$(NinaExecutable)'))</StartWorkingDirectory>
+  </PropertyGroup>
+  <!-- Add plugin-owned dependencies/assets here with relative Destination metadata.
+       Do not add NINA.* assemblies or copy the entire build output.
+       Not packaged on purpose: Microsoft.Web.WebView2.*, System.ComponentModel.Composition, Newtonsoft.Json and
+       CommunityToolkit.Mvvm. They are provided by N.I.N.A. itself. -->
+  <ItemGroup>
+    <PluginPackageFile Include="$(TargetPath)" Destination="$(TargetFileName)" />
+    <PluginPackageFile Include="$(TargetDir)$(TargetName).pdb" Destination="$(TargetName).pdb" />
+    <PluginPackageFile Include="$(TargetDir)NINA.Plugin.SmartSwitchManager.Core.dll" Destination="NINA.Plugin.SmartSwitchManager.Core.dll" />
+    <PluginPackageFile Include="$(PluginRoot)/LICENSE.txt" Destination="LICENSE.txt" />
+  </ItemGroup>
+  <!-- Provider backends: every project under Providers/<Name>/ is packaged to Backends/<Name>/.
+       A new provider therefore needs no packaging entry (see ADD_NEW_PROVIDER.md). -->
+  <ItemGroup>
+    <PluginProviderProject Include="$(PluginRoot)/Providers/*/*.csproj" />
+  </ItemGroup>
+  <Target Name="CollectProviderFiles" BeforeTargets="StagePlugin" Condition="'@(PluginProviderProject)' != ''">
+    <MSBuild Projects="@(PluginProviderProject)" Targets="GetTargetPath">
+      <Output TaskParameter="TargetOutputs" ItemName="_PluginProviderDll" />
+    </MSBuild>
+    <ItemGroup>
+      <PluginPackageFile Include="@(_PluginProviderDll)" Destination="Backends/$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName('%(_PluginProviderDll.MSBuildSourceProjectFile)'))))/%(_PluginProviderDll.Filename)%(_PluginProviderDll.Extension)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="StagePlugin" DependsOnTargets="Build">
+    <MakeDir Directories="$(PluginArtifactDirectory)" />
+    <WriteLinesToFile File="$(PluginArtifactDirectory)/package-files.txt" Lines="@(PluginPackageFile->'%(FullPath)|%(Destination)')" Overwrite="true" Encoding="UTF-8" />
+    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildThisFileDirectory)Stage-Plugin.ps1&quot; -FileList &quot;$(PluginArtifactDirectory)/package-files.txt&quot; -Destination &quot;$(PluginStageDirectory)&quot;" />
+  </Target>
+  <Target Name="DeployPlugin" DependsOnTargets="StagePlugin">
+    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildThisFileDirectory)Deploy-Plugin.ps1&quot; -Stage &quot;$(PluginStageDirectory)&quot; -AssemblyName &quot;$(TargetFileName)&quot; -Destination &quot;$(PluginDeployDirectory)&quot;" />
+  </Target>
+  <Target Name="PackagePlugin" DependsOnTargets="StagePlugin">
+    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildThisFileDirectory)Package-Plugin.ps1&quot; -Stage &quot;$(PluginStageDirectory)&quot; -AssemblyName &quot;$(TargetFileName)&quot; -OutputDirectory &quot;$(PluginArtifactDirectory)/release&quot; -InstallerUrl &quot;$(PluginInstallerUrl)&quot; -Channel &quot;$(PluginChannel)&quot;" />
+  </Target>
+</Project>
