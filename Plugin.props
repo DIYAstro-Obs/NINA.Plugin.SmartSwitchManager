@@ -2,11 +2,12 @@
   <!-- This is the single editable source of plugin identity and manifest metadata. -->
   <PropertyGroup>
     <!-- Do NOT change after the first official release: it identifies the plugin across all versions.
-         Changed once on 2026-11-04 (release 1.0.1.0): the earlier value a1b2c3d4-e5f6-7890-abcd-ef1234567890
+         Changed once on 2026-11-04 (release 0.9.2.0): the earlier value a1b2c3d4-e5f6-7890-abcd-ef1234567890
          is also used by the "GuidingAnalyzer" plugin in the central repository, so N.I.N.A. merged both entries
          and only showed one of them. -->
     <PluginId>2ee9e1a6-a765-41da-a81d-f6fea863f19b</PluginId>
-    <Version Condition="'$(Version)' == ''">1.0.0.0</Version>
+    <!-- Only used by development builds. Releases take the version from the tag (see build/Build-Release.ps1). -->
+    <Version Condition="'$(Version)' == ''">0.0.0.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <Title>Smart Switch Manager</Title>
@@ -36,12 +37,16 @@ Integrate your IoT power relays directly into your astrophotography workflow. Co
 *For detailed setup and developer info, please visit the [GitHub Repository](https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager).*</PluginLongDescription>
     <RepositoryUrl>https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager</RepositoryUrl>
     <PluginHomepage>https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager</PluginHomepage>
-    <PluginTags>Switch,Shelly,SmartHome,Relay,IoT</PluginTags>
+    <!-- No space after the commas: the installed assembly's tags are split at ',' without trimming.
+         Terms shared with other plugins (Automation, Sequencer, Smart Plug, ...) make the plugin show up
+         in the plugin manager's tag filter, which only lists tags used by at least two plugins. -->
+    <PluginTags>Switch,Smart Plug,Power Management,Automation,Remote Observatory,Sequencer,Equipment,Home Assistant,Shelly,Tasmota,ESPHome,Smart Home,Relay,IoT</PluginTags>
     <!-- Lowest N.I.N.A. version this plugin is built and tested against. The net8 build also loads in 3.3. -->
     <MinimumNinaVersion>3.2.0.9001</MinimumNinaVersion>
     <PluginLicense>MPL-2.0</PluginLicense>
     <PluginLicenseUrl>https://www.mozilla.org/en-US/MPL/2.0/</PluginLicenseUrl>
-    <PluginChangelogUrl>https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/commits/main/</PluginChangelogUrl>
+    <!-- Must be a Markdown file: the plugin manager only renders .md documents (HTML pages are rejected). -->
+    <PluginChangelogUrl>https://github.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/blob/main/CHANGELOG.md</PluginChangelogUrl>
     <!-- These end up in the online manifest, so they must be public https URLs (not pack:// URIs). -->
     <PluginFeaturedImageUrl>https://raw.githubusercontent.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/main/NINA.Plugin.SmartSwitchManager/plugin_logo.png</PluginFeaturedImageUrl>
     <PluginScreenshotUrl>https://raw.githubusercontent.com/DIYAstro-Obs/NINA.Plugin.SmartSwitchManager/main/NINA.Plugin.SmartSwitchManager/screenshot.png</PluginScreenshotUrl>

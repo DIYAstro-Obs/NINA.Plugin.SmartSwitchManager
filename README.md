@@ -85,7 +85,7 @@ dotnet msbuild NINA.Plugin.SmartSwitchManager/NINA.Plugin.SmartSwitchManager.csp
 # Create the release archive and manifest in artifacts/release
 dotnet msbuild NINA.Plugin.SmartSwitchManager/NINA.Plugin.SmartSwitchManager.csproj -t:PackagePlugin -p:Configuration=Release
 ```
-Plugin metadata lives in `Plugin.props`. A release is created by pushing a tag of the form `vMAJOR.MINOR.PATCH.BUILD` (for example `v1.0.0.0`), see `.github/workflows/release.yml`.
+Plugin metadata lives in `Plugin.props`. A release is created by pushing a tag of the form `vMAJOR.MINOR.PATCH.BUILD` (for example `v0.9.2.0`), see `.github/workflows/release.yml`.
 
 ## License
 Licensed under the MPL-2.0 License.
