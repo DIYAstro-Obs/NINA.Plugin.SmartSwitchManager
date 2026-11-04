@@ -3,4 +3,11 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    # One pull request per month for all minor and patch updates.
+    # Major version bumps still arrive as separate pull requests.
+    groups:
+      github-actions:
+        update-types:
+          - minor
+          - patch
