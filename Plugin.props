@@ -1,8 +1,11 @@
 <Project>
   <!-- This is the single editable source of plugin identity and manifest metadata. -->
   <PropertyGroup>
-    <!-- Do NOT change after the first release: it identifies the plugin across all versions. -->
-    <PluginId>a1b2c3d4-e5f6-7890-abcd-ef1234567890</PluginId>
+    <!-- Do NOT change after the first official release: it identifies the plugin across all versions.
+         Changed once on 2026-11-04 (release 1.0.1.0): the earlier value a1b2c3d4-e5f6-7890-abcd-ef1234567890
+         is also used by the "GuidingAnalyzer" plugin in the central repository, so N.I.N.A. merged both entries
+         and only showed one of them. -->
+    <PluginId>2ee9e1a6-a765-41da-a81d-f6fea863f19b</PluginId>
     <Version Condition="'$(Version)' == ''">1.0.0.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
