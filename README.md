@@ -40,7 +40,7 @@ The **Toggle SmartSwitch** instruction in the Advanced Sequencer has a built-in 
 
 ## Installation
 
-Requires N.I.N.A. 3.2.0.9001 or newer.
+Requires N.I.N.A. 3.2.0.9001 or newer. Plugin loading and provider discovery are verified on 3.2.0.9001 and on the 3.3.0.1057 test build.
 
 ### Automatic (via Extra Repository)
 The plugin is not part of the official N.I.N.A. plugin repository yet. Until it is, add this repository to install and update it from the Plugin Manager:
